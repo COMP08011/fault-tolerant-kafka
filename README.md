@@ -155,11 +155,18 @@ purchase2
 - Shutdown broker 1
 - Run describe, compare with previous
   - new leader elected for partition
+```
+λ .\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic purchases
+Topic: purchases        PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
+        Topic: purchases        Partition: 0    Leader: 0       Replicas: 0,1,2 Isr: 2,0
+        Topic: purchases        Partition: 1    Leader: 2       Replicas: 2,0,1 Isr: 2,0
+        Topic: purchases        Partition: 2    Leader: 2       Replicas: 1,2,0 Isr: 2,0
+```
 - Run consumer again from beginning
   - see that all messages replicated, nothing lost **persistence**
 
 
-  
+
 
 
 
