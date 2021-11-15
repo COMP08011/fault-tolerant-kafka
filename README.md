@@ -1,6 +1,5 @@
-<!--
 # Errata
--->
+- At start, read from `gmit` topic, not `chat`
 
 # GMIT Distributed Systems
 # Lab: Fault Tolerant and Scalable Kafka
