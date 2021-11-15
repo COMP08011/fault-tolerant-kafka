@@ -1,5 +1,8 @@
 # Errata
 - At start, read from `gmit` topic, not `chat`
+- Typo in `--from-beginninng`
+- describe shows partition numbers, not brokers
+- different number of partitions/replicas to brokers?
 
 # GMIT Distributed Systems
 # Lab: Fault Tolerant and Scalable Kafka
