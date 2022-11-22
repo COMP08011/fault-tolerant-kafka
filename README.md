@@ -1,12 +1,10 @@
-# Errata
-- At start, read from `gmit` topic, not `chat`
-- Typo in `--from-beginninng`
-- describe shows partition numbers, not brokers
-- different number of partitions/replicas to brokers?
-- consume from different partitions to show ordering?
-- rebalance cluster on broker restart?
+<!-- # Errata 2022
+- describe shows partition numbers, not brokers (from 21)
+- different number of partitions/replicas to brokers? (from 21)
+- consume from different partitions to show ordering? (from 21)
+- rebalance cluster on broker restart? (from 21) -->
 
-<img src="./ATU-Logo-Initial-English-RGB-Green--CROP.jpg" height="200" align="centre"/>
+<img src="./ATU-Logo-Initial-English-RGB-Green--CROP.jpg" height="100" align="centre"/>
 <!-- <img src="./atuLogo2.jpg" height="200" align="centre"/> -->
 
 # ATU Distributed Systems
@@ -143,7 +141,7 @@ Note that we don't have to provide the addresses of all the servers in the clust
 ```
 ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
 ```
-This simple topic wasn't partitioned or replicated, it was managed entirely by the single broker we were running. Note how this is reflected in the simple output of `--describe`:
+This simple topic isn't partitioned or replicated, it only has one partition which is managed entirely by the single broker we are running. Note how this is reflected in the simple output of `--describe`:
 
 ```
 comp08011@lab000001:~/dev/kafka_2.13$ ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
