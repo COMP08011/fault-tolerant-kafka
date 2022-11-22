@@ -6,9 +6,12 @@
 - consume from different partitions to show ordering?
 - rebalance cluster on broker restart?
 
-# GMIT Distributed Systems
+<img src="./ATU-Logo-Initial-English-RGB-Green--CROP.jpg" height="200" align="centre"/>
+<!-- <img src="./atuLogo2.jpg" height="200" align="centre"/> -->
+
+# ATU Distributed Systems
 # Lab: Fault Tolerant and Scalable Kafka
-Instructions and starter code for the Distributed Systems lab **Fault Tolerant and Scalable Kafka**.
+Instructions for the Distributed Systems lab **Fault Tolerant and Scalable Kafka**.
 
 ## Lab Objectives
 In this lab you'll:
@@ -21,44 +24,47 @@ In the last lab you set up a simple Kafka cluster consisting of a single Kafka b
 
 In this lab we'll set up a more realistic scenario. We'll expand the cluster by adding more brokers and see that, not only does this prevent our cluster from having a single point of failure, it also allows us to spread the workload across the brokers.
 
-### cmder
-**cmder is the recommended terminal for this lab**. Kafka on Windows is managed by .bat scripts, and auto-complete doesn't work well for .bat scripts in git bash on Windows Terminal. The commands will still work fine regardless of the terminal used, though you may need to change the slash directions.
-
-
 ## Getting Started
 1. Log in to your [Azure Lab Services](https://labs.azure.com/) VM.
-2. In the VM, **open cmder (not Windows Terminal this time)**.
+2. In the VM, open a terminal and navigate to the Kafka install directory.
 
-**All subsequent commands and instructions assume you're in the folder `C:/Users/comp08011/dev/kafka-2.5.0`**
+**All subsequent commands and instructions assume you're in the folder `/home/comp08011/dev/kafka_2.13`**
 
 ## Restarting the Single-Broker Kafka Cluster
 First off, let's get back to where we were at the end of the last lab, with a single broker Kafka cluster up and running, and a command-line producer and consumer running. Every time you start up the cluster after your VM restarts, you'll need to do 2 things:
 1. Start Zookeeper (the one bundles with Kafka)
 2. Start (at least one) Kafka broker
 If you're using the command-line consumer and producer (which we are here) then you'll need to start those too.
-(Use a new cmder tab for each of these operations. You can rename cmder tabs by right-clicking on them, it could be useful in helping to keep track of what's running in each tab).
-- Start Kafka's bundled Zookeeper by running the `zookeeper-server-start.bat` script, passing in the zookeeper config file as a command-line argument
+(Use a new terminal tab for each of these operations. You can rename terminal tabs by right-clicking on them, it could be useful in helping to keep track of what's running in each tab).
+- Start Kafka's bundled Zookeeper by running the `zookeeper-server-start.sh` script, passing in the zookeeper config file as a command-line argument
 ```
-.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties
 ```
-- Start a Kafka broker by running the broker start-up script (in a new cmder tab) and passing in the config file we just setup:
+- Open a new terminal tab (`CTRL-Shift-T`) and start a Kafka broker by running the broker start-up script and passing in the config file we set up last week:
 ``` 
-.\bin\windows\kafka-server-start.bat .\config\server.properties
+./bin/kafka-server-start.sh ./config/server.properties
 ```
-- Run `kafka-console-producer.bat`, setting `--broker-list` to the address of our Kafka broker (`localhost:9092`), and `--topic` to our newly created topic, `gmit`:
+- Open a new terminal tab and run `kafka-console-producer.sh`, setting `--bootstrap-server` to the address of our Kafka broker (`localhost:9092`), and `--topic` to the topic we created last week, `atu`:
 ```
-.\bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic gmit
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic atu
 ```
-- Run the following command to consume messages from the `gmit` topic:
+- Run the following command to consume messages from the `atu` topic (it might be useful to split the terminal tab here, right click and select `Split Horizontally`):
 ```
-.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic chat
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic atu
 ```
 - Publish some messages from the producer and verify that they're received at the consumer.
 
+### Tip: Labelling Terminal Tabs
+We're going to have several terminal tabs open by the end of this lab, and it'll be easy to lose track of what's running where. To avoid this, let's label our tabs before the tab count gets out of hand. 
+
+Double click on the name of the first tab (where Zookeeper is running) and change its name from `comp08011@lab000001: ~/dev/kafka_2.13` to `zookeeper`. Do the same for the Kafka broker that's running, naming it `broker 0`. Call the producer and consumer tab whatever you like (`test` maybe?). 
+
+As we start more brokers label the terminal tabs like this to make it easier to navigate the setup.
+
 ## Exploring the Fault Tolerance of a Single-Broker Cluster
 Now that the simple cluster is up and running let's explore its ability to tolerate faults.
-- Kill the Kafka broker with `CTRL-C`
-- Note the Zookeeper server logging messages about `Invalid session`, it's detected that the Kafka broker has done down
+- Kill the Kafka broker (`broker 0`) with `CTRL-C`
+- Note the Kafka console producer and consumers  logging `WARN` messages about `Connection could not be established`, they've detected that the Kafka broker has done down.
 - Try to send messages using the command-line producer
   - You should find that it's not possible since the connection between the producer and the Kafka cluster has been lost
 
@@ -80,27 +86,27 @@ mkdir logs-2
 $ cp server.properties server-1.properties
 $ cp server.properties server-2.properties
 ```
-- Open `server-1.properties` in a text editor (e.g. atom)
+- Open `server-1.properties` in a text editor (e.g. gedit, run `gedit server-1.properties`)
 - Each broker will need a unique ID, so set `broker.id=1`
 - Since we're testing our cluster by running all the brokers on a single node (our VM), we'll need to give them unique TCP port numbers to listen on:
   - uncomment the line starting with `listeners=`, and set the port number to 9093, i.e.. `listeners=PLAINTEXT://:9093`
-- Set `log.dirs` to point to the first of the two new logs folders you created, i.e.  `log.dirs=/C/Users/comp08011/dev/kafka-2.5.0/logs-1`
+- Set `log.dirs` to point to the first of the two new logs folders you created, i.e.  `log.dirs=/home/comp08011/dev/kafka-2.5.0/logs-1`
 - Configure the second broker by opening `server-2.properties` in the text editor. You'll update the same fields, but giving them unique values, as follows:
 ```
 broker.id=2
 listeners=PLAINTEXT://:9094
-log.dirs=/C/Users/comp08011/dev/kafka-2.5.0/logs-2
+log.dirs=/home/comp08011/dev/kafka-2.5.0/logs-2
 ```
 
 ### Running Additional Brokers
-- Open a new cmder tab or pane (you can make a new pane in the current tab by splitting it)
+- Open a new terminal tab or pane (you can make a new pane in the current tab by splitting it)
 - Start a new Kafka broker, passing in one of the new config files we just set up:
 ```
-.\bin\windows\kafka-server-start.bat config\server-1.properties
+./bin/kafka-server-start.sh config/server-1.properties
 ```
-- In another new cmder tab/pane start another new brokerusing the other config file:
+- In another new terminal tab/pane start another new brokerusing the other config file:
 ```
-.\bin\windows\kafka-server-start.bat config\server-2.properties
+./bin/kafka-server-start.sh config/server-2.properties
 ````
 In the logs output you should see the Kafka brokers running and outputting their ids:
 ```
@@ -108,7 +114,7 @@ In the logs output you should see the Kafka brokers running and outputting their
 
 [2021-11-14 21:57:46,800] INFO [KafkaServer id=2] started (kafka.server.KafkaServer)
 ```
-- To help you keep track of these cmder panes later, rename each one something like b0, b1, b2 (for broker0, broker1 etc).
+- **Don't forget to rename these terminal panes to help you keep track of which broker is running where.**
 
 You should now have a Kafka cluster running with 3 brokers.
 
@@ -121,30 +127,36 @@ Now that we have a more robust cluster running, we can set up a new topic that m
 
 - Create a new topic called `purchases` using the `--create` command on the `kafka-topics` script. We can set up this topic to be partitioned across all 3 brokers and replicated to all 3 brokers using the options `--partitions` and `--replication-factor`:
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --create --replication-factor 3 --partitions 3 --topic purchases
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 3 --partitions 3 --topic purchases
 ```
 Note that we don't have to provide the addresses of all the servers in the cluster, just a single server (`--bootstrap-server`). This server will let clients know about all the brokers in the cluster.
 - Use the `kafka-topics` script's `--list` command to verify that the topic was created:
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --list
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 ```
 - Verify that connection to any broker in the cluster can connect us to all other brokers by re-running the `--list` command but using each of our brokers as the bootstrap server by changing the value of `--bootstrap-server`:
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9093 --list
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9094 --list
+./bin/kafka-topics.sh --bootstrap-server localhost:9093 --list
+./bin/kafka-topics.sh --bootstrap-server localhost:9094 --list
 ```
-- `kafka-topics` also provides a `--describe` command which can give us useful details on how a topic is configured. First, run this command on the topic created last week (`gmit`, or `chat` if `gmit` isn't present):
+- `kafka-topics` also provides a `--describe` command which can give us useful details on how a topic is configured. First, run this command on the topic created last week (`atu`):
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic gmit
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
 ```
-This simple topic wasn't partitioned or replicated, it was managed entirely by the single broker we were running. Note how this is reflected in the simple output of `--describe`.
+This simple topic wasn't partitioned or replicated, it was managed entirely by the single broker we were running. Note how this is reflected in the simple output of `--describe`:
+
+```
+comp08011@lab000001:~/dev/kafka_2.13$ ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
+Topic: atu	TopicId: xhApybWOQ1-t6vszEcz_zw	PartitionCount: 1	ReplicationFactor: 1	Configs: 
+	Topic: atu	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
+```
 - Now check the configuration of the `purchases` topic using `--describe`:
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic purchases
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic purchases
 ```
 The outout here is much more complex, and should look something like this:
 ```
-.\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic purchases
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic purchases
 Topic: purchases        PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
         Topic: purchases        Partition: 0    Leader: 0       Replicas: 0,1,2 Isr: 0,1,2
         Topic: purchases        Partition: 1    Leader: 2       Replicas: 2,0,1 Isr: 2,0,1
@@ -169,11 +181,11 @@ Note an important difference here. When we had a single broker (with a single to
 ## Testing Fault-Tolerance
 Now let's see how fault-tolerant our new cluster is.
 - Shutdown the broker with id=1
-- Run the `kafka-topics` script's `--describe` command again, and compare it's output with the output you got the last time you ran `--describe`.
+- Run the `kafka-topics` script's `--describe` command again, and compare its output with the output you got the last time you ran `--describe`.
   - You should see that the 3 topic partitions still exist, but they are now divided across only 2 brokers
   - Note that the partition for which broker 1 was the leader now has a new leader
 - Try sending messages again from the producer. They should be received at the consumer as before. Shutting down one of the brokers hasn't impacted the ability of the cluster to process data.
-- Kill the consumer and start it again, this time using the `--from-beginninng` option (this will try to read all messages sent through the cluster from the start).
+- Kill the consumer and start it again, this time using the `--from-beginning` option (this will try to read all messages sent through the cluster from the start).
   - You should see all messages previously sent arrive at the consumer. One of the brokers "failing" hasn't had any impact on the persistence of messages in the cluster.
   
 ## Conclusion
