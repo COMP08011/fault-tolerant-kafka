@@ -87,12 +87,12 @@ $ cp server.properties server-2.properties
 - Open `server-1.properties` in a text editor (e.g. gedit, run `gedit server-1.properties`)
 - Each broker will need a unique ID, so set `broker.id=1`
 - Since we're testing our cluster by running all the brokers on a single node (our VM), we'll need to give them unique TCP port numbers to listen on:
-  - uncomment the line starting with `listeners=`, and set the port number to 9093, i.e.. `listeners=PLAINTEXT://:9093`
+  - uncomment the line starting with `listeners=`, and set the port number to 9093, i.e.. `listeners=PLAINTEXT://localhost:9093`
 - Set `log.dirs` to point to the first of the two new logs folders you created, i.e.  `log.dirs=/home/comp08011/dev/kafka/logs-1`
 - Configure the second broker by opening `server-2.properties` in the text editor. You'll update the same fields, but giving them unique values, as follows:
 ```
 broker.id=2
-listeners=PLAINTEXT://:9094
+listeners=PLAINTEXT://localhost:9094
 log.dirs=/home/comp08011/dev/kafka/logs-2
 ```
 
