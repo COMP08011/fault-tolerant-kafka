@@ -26,7 +26,7 @@ In this lab we'll set up a more realistic scenario. We'll expand the cluster by 
 1. Log in to your [Azure Lab Services](https://labs.azure.com/) VM.
 2. In the VM, open a terminal and navigate to the Kafka install directory.
 
-**All subsequent commands and instructions assume you're in the folder `/home/comp08011/dev/kafka_2.13`**
+**All subsequent commands and instructions assume you're in the folder `/home/comp08011/dev/kafka`**
 
 ## Restarting the Single-Broker Kafka Cluster
 First off, let's get back to where we were at the end of the last lab, with a single broker Kafka cluster up and running, and a command-line producer and consumer running. Every time you start up the cluster after your VM restarts, you'll need to do 2 things:
@@ -35,11 +35,11 @@ First off, let's get back to where we were at the end of the last lab, with a si
 If you're using the command-line consumer and producer (which we are here) then you'll need to start those too.
 (Use a new terminal tab for each of these operations. You can rename terminal tabs by right-clicking on them, it could be useful in helping to keep track of what's running in each tab).
 - Start Kafka's bundled Zookeeper by running the `zookeeper-server-start.sh` script, passing in the zookeeper config file as a command-line argument
-```
+```sh
 ./bin/zookeeper-server-start.sh ./config/zookeeper.properties
 ```
 - Open a new terminal tab (`CTRL-Shift-T`) and start a Kafka broker by running the broker start-up script and passing in the config file we set up last week:
-``` 
+```bash 
 ./bin/kafka-server-start.sh ./config/server.properties
 ```
 - Open a new terminal tab and run `kafka-console-producer.sh`, setting `--bootstrap-server` to the address of our Kafka broker (`localhost:9092`), and `--topic` to the topic we created last week, `atu`:
@@ -55,7 +55,7 @@ If you're using the command-line consumer and producer (which we are here) then 
 ### Tip: Labelling Terminal Tabs
 We're going to have several terminal tabs open by the end of this lab, and it'll be easy to lose track of what's running where. To avoid this, let's label our tabs before the tab count gets out of hand. 
 
-Double click on the name of the first tab (where Zookeeper is running) and change its name from `comp08011@lab000001: ~/dev/kafka_2.13` to `zookeeper`. Do the same for the Kafka broker that's running, naming it `broker 0`. Call the producer and consumer tab whatever you like (`test` maybe?). 
+Double click on the name of the first tab (where Zookeeper is running) and change its name from `comp08011@lab000001: ~/dev/kafka` to `zookeeper`. Do the same for the Kafka broker that's running, naming it `broker 0`. Call the producer and consumer tab whatever you like (`test` maybe?). 
 
 As we start more brokers label the terminal tabs like this to make it easier to navigate the setup.
 
@@ -129,11 +129,11 @@ Now that we have a more robust cluster running, we can set up a new topic that m
 ```
 Note that we don't have to provide the addresses of all the servers in the cluster, just a single server (`--bootstrap-server`). This server will let clients know about all the brokers in the cluster.
 - Use the `kafka-topics` script's `--list` command to verify that the topic was created:
-```
+```sh
 ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 ```
 - Verify that connection to any broker in the cluster can connect us to all other brokers by re-running the `--list` command but using each of our brokers as the bootstrap server by changing the value of `--bootstrap-server`:
-```
+```sh
 ./bin/kafka-topics.sh --bootstrap-server localhost:9093 --list
 ./bin/kafka-topics.sh --bootstrap-server localhost:9094 --list
 ```
@@ -143,8 +143,8 @@ Note that we don't have to provide the addresses of all the servers in the clust
 ```
 This simple topic isn't partitioned or replicated, it only has one partition which is managed entirely by the single broker we are running. Note how this is reflected in the simple output of `--describe`:
 
-```
-comp08011@lab000001:~/dev/kafka_2.13$ ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
+```sh
+comp08011@lab000001:~/dev/kafka$ ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic atu
 Topic: atu	TopicId: xhApybWOQ1-t6vszEcz_zw	PartitionCount: 1	ReplicationFactor: 1	Configs: 
 	Topic: atu	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
 ```
